@@ -1,0 +1,13 @@
+{
+  "name": "@chainlink/functions-lens-eventbrite",
+  "main": "request.js",
+  "scripts": {
+    "simulate": "node request.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@chainlink/env-enc": "^1.0.5",
+    "@chainlink/functions-toolkit": "^0.2.3",
+    "ethers": "^5.7.2"
+  }
+}
