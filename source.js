@@ -1,6 +1,8 @@
 const organizationId = args[0];
 const eventId = args[1];
 const msgSender = args[2];
+const percentageOff = args[3];
+const quantityAvailable = args[4];
 
 const resolveAddressToLensHandle = await Functions.makeHttpRequest({
     url: `https://api.lens.dev`,
@@ -36,9 +38,9 @@ const createDiscount = await Functions.makeHttpRequest({
         "discount": {
             "type": "coded",
             "code": discountCode,
-            "percent_off": "100",
+            "percent_off": percentageOff, // "100"
             "event_id": eventId,
-            "quantity_available": 1
+            "quantity_available": quantityAvailable // 1
         }
     }
 });

@@ -37,6 +37,9 @@ contract DiscountPublicationActionTest is Test {
     FunctionsCoordinator functionsCoordinator;
     address mockLensHub;
 
+    string constant PERCENTAGE_OFF = "100";
+    uint64 constant QUANTITY_AVAILABLE = 1;
+
     function setUp() public {
         linkToken = new MockLinkToken();
         mockLensHub = makeAddr("hub");
@@ -131,13 +134,15 @@ contract DiscountPublicationActionTest is Test {
         string memory organizationId,
         string memory lensUserAddress
     ) public returns (string memory discountCode) {
-        string[] memory inputs = new string[](5);
+        string[] memory inputs = new string[](7);
 
         inputs[0] = "node";
         inputs[1] = "request.js";
         inputs[2] = eventId;
         inputs[3] = organizationId;
         inputs[4] = lensUserAddress;
+        inputs[5] = PERCENTAGE_OFF;
+        inputs[6] = Strings.toString(QUANTITY_AVAILABLE);
 
         bytes memory res = vm.ffi(inputs);
         string memory response = string(res);
@@ -164,7 +169,9 @@ contract DiscountPublicationActionTest is Test {
         uint64 donHostedSecretsVersion = SafeCast.toUint64(block.timestamp);
         bytes memory initData = abi.encode(
             donHostedSecretsSlotID,
-            donHostedSecretsVersion
+            donHostedSecretsVersion,
+            bytes32(abi.encodePacked(PERCENTAGE_OFF)),
+            QUANTITY_AVAILABLE
         );
 
         vm.prank(mockLensHub);

@@ -18,6 +18,8 @@ contract DiscountPublicationAction is
     struct RequestDetails {
         uint8 donHostedSecretsSlotID;
         uint64 donHostedSecretsVersion;
+        uint64 quantityAvailable;
+        bytes32 percentageOff;
     }
 
     uint64 internal immutable i_subscriptionId;
@@ -60,11 +62,17 @@ contract DiscountPublicationAction is
         address /*transactionExecutor*/,
         bytes calldata data
     ) external override onlyHub returns (bytes memory) {
-        (uint8 donHostedSecretsSlotID, uint64 donHostedSecretsVersion) = abi
-            .decode(data, (uint8, uint64));
+        (
+            uint8 donHostedSecretsSlotID,
+            uint64 donHostedSecretsVersion,
+            bytes32 percentageOff,
+            uint64 quantityAvailable
+        ) = abi.decode(data, (uint8, uint64, bytes32, uint64));
 
         s_requestDetails.donHostedSecretsSlotID = donHostedSecretsSlotID;
         s_requestDetails.donHostedSecretsVersion = donHostedSecretsVersion;
+        s_requestDetails.quantityAvailable = quantityAvailable;
+        s_requestDetails.percentageOff = percentageOff;
 
         return data;
     }
@@ -89,12 +97,14 @@ contract DiscountPublicationAction is
             s_requestDetails.donHostedSecretsVersion
         );
 
-        string[] memory args = new string[](3);
+        string[] memory args = new string[](5);
         args[0] = organizationId;
         args[1] = eventId;
         args[2] = string(
             abi.encodePacked(processActionParams.actorProfileOwner)
         );
+        args[3] = string(abi.encodePacked(s_requestDetails.percentageOff));
+        args[4] = string(abi.encodePacked(s_requestDetails.quantityAvailable));
 
         req.setArgs(args);
 
