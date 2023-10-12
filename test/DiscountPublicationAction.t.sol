@@ -226,7 +226,8 @@ contract DiscountPublicationActionTest is Test {
         );
 
         string memory discountCode = discountPublicationAction.getDiscountCode(
-            actorProfileOwner
+            actorProfileOwner,
+            eventId
         );
 
         assertEq(response, discountCode);

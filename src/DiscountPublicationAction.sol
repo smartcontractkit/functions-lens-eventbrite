@@ -27,9 +27,9 @@ contract DiscountPublicationAction is
 
     RequestDetails internal s_requestDetails;
 
-    mapping(bytes32 requestId => address msgSender)
+    mapping(bytes32 requestId => bytes32 msgSenderEventId)
         internal s_functionsRequests;
-    mapping(address => bytes) internal s_discountCodes;
+    mapping(bytes32 msgSenderEventId => bytes) internal s_discountCodes;
 
     event Request(bytes32 indexed requestId);
     event DiscountCode(bytes indexed discountCode);
@@ -105,7 +105,10 @@ contract DiscountPublicationAction is
             i_jobId
         );
 
-        s_functionsRequests[requestId] = processActionParams.actorProfileOwner;
+        bytes32 userToEventIdRelation = keccak256(
+            abi.encodePacked(processActionParams.actorProfileOwner, eventId)
+        );
+        s_functionsRequests[requestId] = userToEventIdRelation;
 
         emit Request(requestId);
 
@@ -127,9 +130,14 @@ contract DiscountPublicationAction is
     }
 
     function getDiscountCode(
-        address user
+        address user,
+        string memory eventId
     ) external view returns (string memory) {
-        return string(s_discountCodes[user]);
+        bytes32 userToEventIdRelation = keccak256(
+            abi.encodePacked(user, eventId)
+        );
+
+        return string(s_discountCodes[userToEventIdRelation]);
     }
 
     function fulfillRequest(
