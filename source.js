@@ -23,7 +23,7 @@ const lensHandle = resolveAddressToLensHandle.data.data.profiles.items[0].name;
 
 console.log(lensHandle);
 
-const discountCode = `DISCOUNT_CODE_${lensHandle}`;
+const discountCode = `DISCOUNT_CODE_${organizationId}_${eventId}_${lensHandle}`;
 
 const createDiscount = await Functions.makeHttpRequest({
     url: `https://www.eventbriteapi.com/v3/organizations/${organizationId}/discounts/`,
