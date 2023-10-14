@@ -75,6 +75,28 @@ forge test -vvv --ffi
 
 ![test](./img/test.png)
 
+## Deployment
+
+To deploy [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract, prepare the following constructor arguments:
+
+- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
+- `moduleGlobals` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
+- `router` - The address of a Chainlink [Functions Router](https://docs.chain.link/chainlink-functions/supported-networks) smart contract
+- `subscriptionId` - The ID of your Chainlink Functions subscription which you can create at [Functions Subscription Manager](https://functions.chain.link/) following steps from the [Official Documentation](https://docs.chain.link/chainlink-functions/resources/subscriptions)
+- `callbackGasLimit` - The [maximum gas](https://docs.chain.link/chainlink-functions/api-reference/functions-client) that Chainlink Functions can use when transmitting the response to your contract
+- `donId` - The ID of a Chainlink Functions [DON to be invoked](https://docs.chain.link/chainlink-functions/supported-networks)
+
+Then run the `forge create` command:
+
+```
+forge create --rpc-url <your_rpc_url> \
+    --private-key <your_private_key> \
+    --constructor-args <hub> <moduleGlobals> <router> <subscriptionId> <callbackGasLimit> <donId> \
+    --etherscan-api-key <your_etherscan_api_key> \
+    --verify \
+    src/DiscountPublicationAction.sol:DiscountPublicationAction
+```
+
 ## Disclaimer
 
-This tutorial offers educational examples of how to use a Chainlink system, product, or service and is provided to demonstrate how to interact with Chainlink’s systems, products, and services to integrate them into your own. This template is provided “AS IS” and “AS AVAILABLE” without warranties of any kind, it has not been audited, and it may be missing key checks or error handling to make the usage of the system, product, or service more clear. Do not use the code in this example in a production environment without completing your own audits and application of best practices. Neither Chainlink Labs, the Chainlink Foundation, nor Chainlink node operators are responsible for unintended outputs that are generated due to errors in code. 
+This tutorial offers educational examples of how to use a Chainlink system, product, or service and is provided to demonstrate how to interact with Chainlink’s systems, products, and services to integrate them into your own. This template is provided “AS IS” and “AS AVAILABLE” without warranties of any kind, it has not been audited, and it may be missing key checks or error handling to make the usage of the system, product, or service more clear. Do not use the code in this example in a production environment without completing your own audits and application of best practices. Neither Chainlink Labs, the Chainlink Foundation, nor Chainlink node operators are responsible for unintended outputs that are generated due to errors in code.

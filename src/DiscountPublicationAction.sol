@@ -23,9 +23,9 @@ contract DiscountPublicationAction is
     }
 
     uint64 internal immutable i_subscriptionId;
-    uint32 internal immutable i_gasLimit;
+    uint32 internal immutable i_callbackGasLimit;
     address internal immutable i_moduleGlobals;
-    bytes32 internal immutable i_jobId;
+    bytes32 internal immutable i_donId;
 
     RequestDetails internal s_requestDetails;
 
@@ -47,13 +47,13 @@ contract DiscountPublicationAction is
         address moduleGlobals,
         address router,
         uint64 subscriptionId,
-        uint32 gasLimit,
-        bytes32 jobId
+        uint32 callbackGasLimit,
+        bytes32 donId
     ) HubRestricted(hub) FunctionsClient(router) {
         i_moduleGlobals = moduleGlobals;
         i_subscriptionId = subscriptionId;
-        i_gasLimit = gasLimit;
-        i_jobId = jobId;
+        i_callbackGasLimit = callbackGasLimit;
+        i_donId = donId;
     }
 
     function initializePublicationAction(
@@ -111,8 +111,8 @@ contract DiscountPublicationAction is
         bytes32 requestId = _sendRequest(
             req.encodeCBOR(),
             i_subscriptionId,
-            i_gasLimit,
-            i_jobId
+            i_callbackGasLimit,
+            i_donId
         );
 
         bytes32 userToEventIdRelation = keccak256(
