@@ -31,7 +31,7 @@ library JsSource {
         "    url: `https://www.eventbriteapi.com/v3/organizations/${organizationId}/discounts/`,"
         "    method: `POST`,"
         "    headers: {"
-        "        'Authorization': `Bearer ${secrets.API_KEY}`,"
+        "        'Authorization': `Bearer ${secrets.OATH_KEY}`,"
         "        'Content-Type': 'application/json'"
         "    },"
         "    data: {"

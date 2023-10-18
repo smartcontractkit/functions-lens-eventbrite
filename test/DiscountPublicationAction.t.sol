@@ -137,7 +137,7 @@ contract DiscountPublicationActionTest is Test {
         string[] memory inputs = new string[](7);
 
         inputs[0] = "node";
-        inputs[1] = "request.js";
+        inputs[1] = "simulateRequest.js";
         inputs[2] = eventId;
         inputs[3] = organizationId;
         inputs[4] = lensUserAddress;
@@ -183,8 +183,8 @@ contract DiscountPublicationActionTest is Test {
         );
 
         // Stani.lens on Polygon Mainnet
-        uint256 actorProfileId = 0x05;
         address actorProfileOwner = 0x7241DDDec3A6aF367882eAF9651b87E1C7549Dff;
+        uint256 actorProfileId = 0x05;
 
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/args.json");
@@ -219,16 +219,16 @@ contract DiscountPublicationActionTest is Test {
 
         bytes32 requestId = abi.decode(returnData, (bytes32));
 
-        string memory response = ffi_functionsSimulate(
-            "1748361736953", // Put your eventId here
-            "710604425967", // Put your organizationId here
+        string memory simulationResponse = ffi_functionsSimulate(
+            "1748361736953", // @Dev TODO Put your eventId here
+            "710604425967", //  @Dev TODO  Put your organizationId here
             Strings.toHexString(actorProfileOwner)
         );
 
         vm.prank(address(functionsRouter));
         discountPublicationAction.handleOracleFulfillment(
             requestId,
-            bytes(response),
+            bytes(simulationResponse),
             ""
         );
 
@@ -237,6 +237,6 @@ contract DiscountPublicationActionTest is Test {
             eventId
         );
 
-        assertEq(response, discountCode);
+        assertEq(simulationResponse, discountCode);
     }
 }

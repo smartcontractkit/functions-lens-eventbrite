@@ -2,7 +2,7 @@
   "name": "@chainlink/functions-lens-eventbrite",
   "main": "request.js",
   "scripts": {
-    "simulate": "node request.js",
+    "simulate": "node simulateRequest.js",
     "gas:snapshot": "forge snapshot --asc --snap ./.gas-snapshot --ffi",
     "gas:report": "forge test -vvv --ffi --gas-report"
   },

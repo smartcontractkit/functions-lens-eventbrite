@@ -31,7 +31,7 @@ const createDiscount = await Functions.makeHttpRequest({
     url: `https://www.eventbriteapi.com/v3/organizations/${organizationId}/discounts/`,
     method: "POST",
     headers: {
-        'Authorization': `Bearer ${secrets.API_KEY}`,
+        'Authorization': `Bearer ${secrets.OAUTH_KEY}`,
         'Content-Type': 'application/json'
     },
     data: {
