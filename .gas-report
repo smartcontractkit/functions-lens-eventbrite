@@ -1,0 +1,23 @@
+# with keccak256 relation hash solution (implemented)
+
+| src/DiscountPublicationAction.sol:DiscountPublicationAction contract |                 |        |        |        |         |
+| -------------------------------------------------------------------- | --------------- | ------ | ------ | ------ | ------- |
+| Deployment Cost                                                      | Deployment Size |        |        |        |         |
+| 1537972                                                              | 8189            |        |        |        |         |
+| Function Name                                                        | min             | avg    | median | max    | # calls |
+| getDiscountCode                                                      | 2634            | 2634   | 2634   | 2634   | 1       |
+| handleOracleFulfillment                                              | 70757           | 70757  | 70757  | 70757  | 1       |
+| initializePublicationAction                                          | 23605           | 23605  | 23605  | 23605  | 1       |
+| processPublicationAction                                             | 246221          | 246221 | 246221 | 246221 | 1       |
+
+# with mapping to mapping solution (deprecated)
+
+| src/DiscountPublicationAction.sol:DiscountPublicationAction contract |                 |        |        |        |         |
+| -------------------------------------------------------------------- | --------------- | ------ | ------ | ------ | ------- |
+| Deployment Cost                                                      | Deployment Size |        |        |        |         |
+| 1608649                                                              | 8542            |        |        |        |         |
+| Function Name                                                        | min             | avg    | median | max    | # calls |
+| getDiscountCode                                                      | 2444            | 2444   | 2444   | 2444   | 1       |
+| handleOracleFulfillment                                              | 71891           | 71891  | 71891  | 71891  | 1       |
+| initializePublicationAction                                          | 23605           | 23605  | 23605  | 23605  | 1       |
+| processPublicationAction                                             | 335049          | 335049 | 335049 | 335049 | 1       |

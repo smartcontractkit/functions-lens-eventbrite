@@ -16,7 +16,7 @@ const simulateRequest = async () => {
         .toString();
 
     const args = [process.argv[2], process.argv[3], process.argv[4]]
-    const secrets = { API_KEY: process.env.API_KEY };
+    const secrets = { OAUTH_KEY: process.env.OAUTH_KEY };
 
 
     ///////// START SIMULATION ////////////

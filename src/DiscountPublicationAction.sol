@@ -18,18 +18,20 @@ contract DiscountPublicationAction is
     struct RequestDetails {
         uint8 donHostedSecretsSlotID;
         uint64 donHostedSecretsVersion;
+        uint64 quantityAvailable;
+        bytes32 percentageOff;
     }
 
     uint64 internal immutable i_subscriptionId;
-    uint32 internal immutable i_gasLimit;
+    uint32 internal immutable i_callbackGasLimit;
     address internal immutable i_moduleGlobals;
-    bytes32 internal immutable i_jobId;
+    bytes32 internal immutable i_donId;
 
     RequestDetails internal s_requestDetails;
 
-    mapping(bytes32 requestId => address msgSender)
+    mapping(bytes32 requestId => bytes32 msgSenderEventId)
         internal s_functionsRequests;
-    mapping(address => bytes) internal s_discountCodes;
+    mapping(bytes32 msgSenderEventId => bytes) internal s_discountCodes;
 
     event Request(bytes32 indexed requestId);
     event DiscountCode(bytes indexed discountCode);
@@ -45,13 +47,13 @@ contract DiscountPublicationAction is
         address moduleGlobals,
         address router,
         uint64 subscriptionId,
-        uint32 gasLimit,
-        bytes32 jobId
+        uint32 callbackGasLimit,
+        bytes32 donId
     ) HubRestricted(hub) FunctionsClient(router) {
         i_moduleGlobals = moduleGlobals;
         i_subscriptionId = subscriptionId;
-        i_gasLimit = gasLimit;
-        i_jobId = jobId;
+        i_callbackGasLimit = callbackGasLimit;
+        i_donId = donId;
     }
 
     function initializePublicationAction(
@@ -60,11 +62,17 @@ contract DiscountPublicationAction is
         address /*transactionExecutor*/,
         bytes calldata data
     ) external override onlyHub returns (bytes memory) {
-        (uint8 donHostedSecretsSlotID, uint64 donHostedSecretsVersion) = abi
-            .decode(data, (uint8, uint64));
+        (
+            uint8 donHostedSecretsSlotID,
+            uint64 donHostedSecretsVersion,
+            bytes32 percentageOff,
+            uint64 quantityAvailable
+        ) = abi.decode(data, (uint8, uint64, bytes32, uint64));
 
         s_requestDetails.donHostedSecretsSlotID = donHostedSecretsSlotID;
         s_requestDetails.donHostedSecretsVersion = donHostedSecretsVersion;
+        s_requestDetails.quantityAvailable = quantityAvailable;
+        s_requestDetails.percentageOff = percentageOff;
 
         return data;
     }
@@ -89,23 +97,28 @@ contract DiscountPublicationAction is
             s_requestDetails.donHostedSecretsVersion
         );
 
-        string[] memory args = new string[](3);
+        string[] memory args = new string[](5);
         args[0] = organizationId;
         args[1] = eventId;
         args[2] = string(
             abi.encodePacked(processActionParams.actorProfileOwner)
         );
+        args[3] = string(abi.encodePacked(s_requestDetails.percentageOff));
+        args[4] = string(abi.encodePacked(s_requestDetails.quantityAvailable));
 
         req.setArgs(args);
 
         bytes32 requestId = _sendRequest(
             req.encodeCBOR(),
             i_subscriptionId,
-            i_gasLimit,
-            i_jobId
+            i_callbackGasLimit,
+            i_donId
         );
 
-        s_functionsRequests[requestId] = processActionParams.actorProfileOwner;
+        bytes32 userToEventIdRelation = keccak256(
+            abi.encodePacked(processActionParams.actorProfileOwner, eventId)
+        );
+        s_functionsRequests[requestId] = userToEventIdRelation;
 
         emit Request(requestId);
 
@@ -127,9 +140,14 @@ contract DiscountPublicationAction is
     }
 
     function getDiscountCode(
-        address user
+        address user,
+        string memory eventId
     ) external view returns (string memory) {
-        return string(s_discountCodes[user]);
+        bytes32 userToEventIdRelation = keccak256(
+            abi.encodePacked(user, eventId)
+        );
+
+        return string(s_discountCodes[userToEventIdRelation]);
     }
 
     function fulfillRequest(

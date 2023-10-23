@@ -1,0 +1,7 @@
+# with keccak256 relation hash solution (implemented)
+
+DiscountPublicationActionTest:testIntegration() (gas: 2392566)
+
+# with mapping to mapping solution (deprecated)
+
+DiscountPublicationActionTest:testIntegration() (gas: 2482338)

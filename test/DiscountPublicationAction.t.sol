@@ -37,6 +37,9 @@ contract DiscountPublicationActionTest is Test {
     FunctionsCoordinator functionsCoordinator;
     address mockLensHub;
 
+    string constant PERCENTAGE_OFF = "100";
+    uint64 constant QUANTITY_AVAILABLE = 1;
+
     function setUp() public {
         linkToken = new MockLinkToken();
         mockLensHub = makeAddr("hub");
@@ -131,13 +134,15 @@ contract DiscountPublicationActionTest is Test {
         string memory organizationId,
         string memory lensUserAddress
     ) public returns (string memory discountCode) {
-        string[] memory inputs = new string[](5);
+        string[] memory inputs = new string[](7);
 
         inputs[0] = "node";
-        inputs[1] = "request.js";
+        inputs[1] = "simulateRequest.js";
         inputs[2] = eventId;
         inputs[3] = organizationId;
         inputs[4] = lensUserAddress;
+        inputs[5] = PERCENTAGE_OFF;
+        inputs[6] = Strings.toString(QUANTITY_AVAILABLE);
 
         bytes memory res = vm.ffi(inputs);
         string memory response = string(res);
@@ -164,7 +169,9 @@ contract DiscountPublicationActionTest is Test {
         uint64 donHostedSecretsVersion = SafeCast.toUint64(block.timestamp);
         bytes memory initData = abi.encode(
             donHostedSecretsSlotID,
-            donHostedSecretsVersion
+            donHostedSecretsVersion,
+            bytes32(abi.encodePacked(PERCENTAGE_OFF)),
+            QUANTITY_AVAILABLE
         );
 
         vm.prank(mockLensHub);
@@ -176,8 +183,8 @@ contract DiscountPublicationActionTest is Test {
         );
 
         // Stani.lens on Polygon Mainnet
-        uint256 actorProfileId = 0x05;
         address actorProfileOwner = 0x7241DDDec3A6aF367882eAF9651b87E1C7549Dff;
+        uint256 actorProfileId = 0x05;
 
         string memory root = vm.projectRoot();
         string memory path = string.concat(root, "/args.json");
@@ -212,23 +219,24 @@ contract DiscountPublicationActionTest is Test {
 
         bytes32 requestId = abi.decode(returnData, (bytes32));
 
-        string memory response = ffi_functionsSimulate(
-            "1748361736953", // Put your eventId here
-            "710604425967", // Put your organizationId here
+        string memory simulationResponse = ffi_functionsSimulate(
+            "1748361736953", // @Dev TODO Put your eventId here
+            "710604425967", //  @Dev TODO  Put your organizationId here
             Strings.toHexString(actorProfileOwner)
         );
 
         vm.prank(address(functionsRouter));
         discountPublicationAction.handleOracleFulfillment(
             requestId,
-            bytes(response),
+            bytes(simulationResponse),
             ""
         );
 
         string memory discountCode = discountPublicationAction.getDiscountCode(
-            actorProfileOwner
+            actorProfileOwner,
+            eventId
         );
 
-        assertEq(response, discountCode);
+        assertEq(simulationResponse, discountCode);
     }
 }

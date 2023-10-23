@@ -1,6 +1,8 @@
 const organizationId = args[0];
 const eventId = args[1];
 const msgSender = args[2];
+const percentageOff = args[3];
+const quantityAvailable = args[4];
 
 const resolveAddressToLensHandle = await Functions.makeHttpRequest({
     url: `https://api.lens.dev`,
@@ -23,22 +25,22 @@ const lensHandle = resolveAddressToLensHandle.data.data.profiles.items[0].name;
 
 console.log(lensHandle);
 
-const discountCode = `DISCOUNT_CODE_${lensHandle}`;
+const discountCode = `DISCOUNT_CODE_${organizationId}_${eventId}_${lensHandle}`;
 
 const createDiscount = await Functions.makeHttpRequest({
     url: `https://www.eventbriteapi.com/v3/organizations/${organizationId}/discounts/`,
     method: "POST",
     headers: {
-        'Authorization': `Bearer ${secrets.API_KEY}`,
+        'Authorization': `Bearer ${secrets.OAUTH_KEY}`,
         'Content-Type': 'application/json'
     },
     data: {
         "discount": {
             "type": "coded",
             "code": discountCode,
-            "percent_off": "100",
+            "percent_off": percentageOff, // "100"
             "event_id": eventId,
-            "quantity_available": 1
+            "quantity_available": quantityAvailable // 1
         }
     }
 });

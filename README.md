@@ -30,14 +30,14 @@ The event organizer will need to create a new event on Eventbrite, following [th
 
 ![event](./img/event.png)
 
-To develop and use this project, you will need to obtain a [free Eventbrite API key](https://www.eventbrite.com/help/en-us/articles/849962/generate-an-api-key/).
+To develop and use this project, you will need to obtain a [free Eventbrite OAUTH token](https://www.eventbrite.com/help/en-us/articles/849962/generate-an-api-key/).
 
-Once you generate an Eventbrite API key, you can visit the following web page to validate it works as expected `https://www.eventbriteapi.com/v3/users/me/?token=<YOUR_API_KEY_GOES_HERE>`
+Once you generate an Eventbrite OAUTH token, you can visit the following web page to validate it works as expected `https://www.eventbriteapi.com/v3/users/me/?token=<YOUR_OAUTH_TOKEN_GOES_HERE>`
 
 Next, you will need to get your
 
-- **Organization ID**, by visiting `https://www.eventbriteapi.com/v3/users/me/organizations/?token=<YOUR_API_KEY_GOES_HERE>`
-- **Event ID**, by visiting `https://www.eventbriteapi.com/v3/organizations/<ORGANIZATION_ID_GOES_HERE>/events/?token=<YOUR_API_KEY_GOES_HERE>`
+- **Organization ID**, by visiting `https://www.eventbriteapi.com/v3/users/me/organizations/?token=<YOUR_OAUTH_TOKEN_GOES_HERE>`
+- **Event ID**, by visiting `https://www.eventbriteapi.com/v3/organizations/<ORGANIZATION_ID_GOES_HERE>/events/?token=<YOUR_OAUTH_TOKEN_GOES_HERE>`
 
 The core logic is stored in the [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract which implements `IPublicationActionModule` and `FunctionsClient` interfaces. On Lens collect, it will make a Chainlink Functions request to execute the JavaScript code from the [`source.js`](./source.js) file, which will resolve User's address to a Lens handle and generate the Eventbrite discount code for the provided event. The [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract will then store the returned discount code.
 
@@ -53,7 +53,7 @@ For setting up environment variables we are going to use the [`@chainlink/env-en
 npx env-enc set-pw
 ```
 
-2. Now set the API_KEY environment variable by typing:
+2. Now set the `OAUTH_KEY` environment variable by typing:
 
 ```shell
 npx env-enc set
@@ -75,6 +75,29 @@ forge test -vvv --ffi
 
 ![test](./img/test.png)
 
+## Deployment
+
+To deploy [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract, prepare the following constructor arguments:
+
+- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
+- `moduleGlobals` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
+- `router` - The address of a Chainlink [Functions Router](https://docs.chain.link/chainlink-functions/supported-networks) smart contract
+- `subscriptionId` - The ID of your Chainlink Functions subscription which you can create at [Functions Subscription Manager](https://functions.chain.link/) following steps from the [Official Documentation](https://docs.chain.link/chainlink-functions/resources/subscriptions)
+- `callbackGasLimit` - The [maximum gas](https://docs.chain.link/chainlink-functions/api-reference/functions-client) that Chainlink Functions can use when transmitting the response to your contract
+- `donIdBytes32` - The ID of a Chainlink Functions [DON to be invoked](https://docs.chain.link/chainlink-functions/supported-networks). This needs to be converted to `bytes32` with `cast --format-bytes32-string "fun-polygon-mumbai-1"` or via etherjs with `node getDonIdBytes.js fun-polygon-mumbai-1`.
+
+Then run the `forge create` command:
+
+```
+forge create --rpc-url <your_rpc_url> \
+    --private-key <your_private_key> \
+    --constructor-args <hub> <moduleGlobals> <router> <subscriptionId> <callbackGasLimit> <donIdBytes32> \
+    --etherscan-api-key <your_etherscan_api_key> \
+    --verify \
+    --legacy \
+    src/DiscountPublicationAction.sol:DiscountPublicationAction
+```
+
 ## Disclaimer
 
-This tutorial offers educational examples of how to use a Chainlink system, product, or service and is provided to demonstrate how to interact with Chainlink’s systems, products, and services to integrate them into your own. This template is provided “AS IS” and “AS AVAILABLE” without warranties of any kind, it has not been audited, and it may be missing key checks or error handling to make the usage of the system, product, or service more clear. Do not use the code in this example in a production environment without completing your own audits and application of best practices. Neither Chainlink Labs, the Chainlink Foundation, nor Chainlink node operators are responsible for unintended outputs that are generated due to errors in code. 
+This tutorial offers educational examples of how to use a Chainlink system, product, or service and is provided to demonstrate how to interact with Chainlink’s systems, products, and services to integrate them into your own. This template is provided “AS IS” and “AS AVAILABLE” without warranties of any kind, it has not been audited, and it may be missing key checks or error handling to make the usage of the system, product, or service more clear. Do not use the code in this example in a production environment without completing your own audits and application of best practices. Neither Chainlink Labs, the Chainlink Foundation, nor Chainlink node operators are responsible for unintended outputs that are generated due to errors in code.
