@@ -79,8 +79,8 @@ forge test -vvv --ffi
 
 To deploy [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract, prepare the following constructor arguments:
 
-- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
-- `moduleGlobals` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/docs/deployed-contract-addresses) smart contract
+- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/v2/docs/deployed-contract-addresses#mumbai-developer-preview) smart contract
+- `moduleGlobals` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/v2/docs/deployed-contract-addresses#mumbai-developer-preview) smart contract
 - `router` - The address of a Chainlink [Functions Router](https://docs.chain.link/chainlink-functions/supported-networks) smart contract
 - `subscriptionId` - The ID of your Chainlink Functions subscription which you can create at [Functions Subscription Manager](https://functions.chain.link/) following steps from the [Official Documentation](https://docs.chain.link/chainlink-functions/resources/subscriptions)
 - `callbackGasLimit` - The [maximum gas](https://docs.chain.link/chainlink-functions/api-reference/functions-client) that Chainlink Functions can use when transmitting the response to your contract
@@ -97,6 +97,12 @@ forge create --rpc-url <your_rpc_url> \
     --legacy \
     src/DiscountPublicationAction.sol:DiscountPublicationAction
 ```
+
+Make a note of your deployed contract.
+
+Then Head to the [Lens V2 ModuleGlobals Contract on Mumbai](https://mumbai.polygonscan.com/address/0x8834aE494ADD3C56d274Fe88243526DBAB15dEF8) and from the `Contracts` tab, click on `Write as Proxy`.  Connect your wallet to the page, and then call `registerModule` with the following arguments:
+- `moduleAddress` : the Open Action with Functions contract you just deployed
+- `moduleType`:  1  (Enum for Open Action) ([ref](https://docs.lens.xyz/v2/docs/publishing-a-module))
 
 ## Disclaimer
 
