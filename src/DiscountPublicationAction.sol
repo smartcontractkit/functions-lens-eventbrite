@@ -7,6 +7,7 @@ import {IModuleGlobals} from "src/vendor/lens/v2/interfaces/IModuleGlobals.sol";
 import {HubRestricted} from "src/vendor/lens/v2/base/HubRestricted.sol";
 import {FunctionsClient} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {FunctionsRequest} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
+import "forge-std/console.sol";
 
 contract DiscountPublicationAction is
     HubRestricted,
@@ -21,6 +22,10 @@ contract DiscountPublicationAction is
         uint64 quantityAvailable;
         bytes32 percentageOff;
     }
+
+    bytes32 public s_lastRequestId;
+    bytes public s_lastResponse;
+    bytes public s_lastError;
 
     uint64 internal immutable i_subscriptionId;
     uint32 internal immutable i_callbackGasLimit;
@@ -115,6 +120,10 @@ contract DiscountPublicationAction is
             i_donId
         );
 
+        console.logBytes(req.encodeCBOR());
+
+        s_lastRequestId = requestId;
+
         bytes32 userToEventIdRelation = keccak256(
             abi.encodePacked(processActionParams.actorProfileOwner, eventId)
         );
@@ -153,8 +162,11 @@ contract DiscountPublicationAction is
     function fulfillRequest(
         bytes32 requestId,
         bytes memory response,
-        bytes memory /*err*/
+        bytes memory err
     ) internal override {
+        s_lastResponse = response;
+        s_lastError = err;
+        
         s_discountCodes[s_functionsRequests[requestId]] = response;
         emit DiscountCode(response);
     }
