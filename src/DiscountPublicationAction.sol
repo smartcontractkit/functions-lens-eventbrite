@@ -7,6 +7,7 @@ import {IModuleGlobals} from "src/vendor/lens/v2/interfaces/IModuleGlobals.sol";
 import {HubRestricted} from "src/vendor/lens/v2/base/HubRestricted.sol";
 import {FunctionsClient} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {FunctionsRequest} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
+import  "openzeppelin-contracts/contracts/utils/Strings.sol";
 import "forge-std/console.sol";
 
 contract DiscountPublicationAction is
@@ -19,8 +20,8 @@ contract DiscountPublicationAction is
     struct RequestDetails {
         uint8 donHostedSecretsSlotID;
         uint64 donHostedSecretsVersion;
-        uint64 quantityAvailable;
-        bytes32 percentageOff;
+        string quantityAvailable;
+        string percentageOff;
     }
 
     bytes32 public s_lastRequestId;
@@ -70,9 +71,11 @@ contract DiscountPublicationAction is
         (
             uint8 donHostedSecretsSlotID,
             uint64 donHostedSecretsVersion,
-            bytes32 percentageOff,
-            uint64 quantityAvailable
-        ) = abi.decode(data, (uint8, uint64, bytes32, uint64));
+            string memory percentageOff,
+            string memory quantityAvailable
+        ) = abi.decode(data, (uint8, uint64, string, string));
+
+        console.log("quantityAvailable", quantityAvailable);
 
         s_requestDetails.donHostedSecretsSlotID = donHostedSecretsSlotID;
         s_requestDetails.donHostedSecretsVersion = donHostedSecretsVersion;
@@ -94,6 +97,15 @@ contract DiscountPublicationAction is
                 (string, string, string)
             );
 
+        // function processPublicationAction(
+        //     bytes calldata actionModuleData
+        // ) external override onlyHub returns (bytes memory) {
+        //     (
+        //         string memory organizationId,
+        //         string memory eventId,
+        //         string memory javaScriptSource
+        //     ) = abi.decode(actionModuleData, (string, string, string));
+
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(javaScriptSource);
 
@@ -105,11 +117,16 @@ contract DiscountPublicationAction is
         string[] memory args = new string[](5);
         args[0] = organizationId;
         args[1] = eventId;
-        args[2] = string(
-            abi.encodePacked(processActionParams.actorProfileOwner)
-        );
-        args[3] = string(abi.encodePacked(s_requestDetails.percentageOff));
-        args[4] = string(abi.encodePacked(s_requestDetails.quantityAvailable));
+        
+        // convert address of the personal invoking the OA into a string.
+        args[2] = Strings.toHexString(uint256(uint160(processActionParams.actorProfileOwner)), 20);
+       
+        args[3] = s_requestDetails.percentageOff;
+        args[4] = s_requestDetails.quantityAvailable;
+
+        console.log("hey", args[2]);
+        console.log("hey", args[3]);
+        console.log("hey", args[4]);
 
         req.setArgs(args);
 
@@ -120,7 +137,7 @@ contract DiscountPublicationAction is
             i_donId
         );
 
-        console.logBytes(req.encodeCBOR());
+        // console.logBytes(req.encodeCBOR()); // TODO: zubin remove
 
         s_lastRequestId = requestId;
 
@@ -166,7 +183,7 @@ contract DiscountPublicationAction is
     ) internal override {
         s_lastResponse = response;
         s_lastError = err;
-        
+
         s_discountCodes[s_functionsRequests[requestId]] = response;
         emit DiscountCode(response);
     }

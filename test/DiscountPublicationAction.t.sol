@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
+import "forge-std/console.sol";
+
 import {DiscountPublicationAction} from "src/DiscountPublicationAction.sol";
 import {ModuleGlobals} from "src/vendor/lens/v2/misc/ModuleGlobals.sol";
 import {MockLinkToken} from "src/vendor/chainlink/v0.8/mocks/MockLinkToken.sol";
@@ -236,6 +238,8 @@ contract DiscountPublicationActionTest is Test {
             actorProfileOwner,
             eventId
         );
+
+        console.log("ASSERT ON ", discountCode, simulationResponse);  // TODO zubin
 
         assertEq(simulationResponse, discountCode);
     }
