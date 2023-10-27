@@ -140,8 +140,8 @@ contract DiscountPublicationActionTest is Test {
 
         inputs[0] = "node";
         inputs[1] = "simulateRequest.js";
-        inputs[2] = eventId;
-        inputs[3] = organizationId;
+        inputs[2] = organizationId; // @andrejrakic please note swap
+        inputs[3] = eventId;
         inputs[4] = lensUserAddress;
         inputs[5] = PERCENTAGE_OFF;
         inputs[6] = Strings.toString(QUANTITY_AVAILABLE);

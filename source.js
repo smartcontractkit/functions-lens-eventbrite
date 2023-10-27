@@ -14,7 +14,7 @@ const resolveAddressToLensHandle = await Functions.makeHttpRequest({
     query: `{
             profiles(
                 request: {
-                  where: { ownedBy: ${msgSender} }
+                  where: { ownedBy: \"${msgSender}\" }
                 }
               ) {
                 items {
@@ -26,7 +26,6 @@ const resolveAddressToLensHandle = await Functions.makeHttpRequest({
         }`,
   },
 });
-
 
 const lensHandle = resolveAddressToLensHandle.data.data.profiles.items[0].handle.fullHandle
 

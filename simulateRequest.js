@@ -18,7 +18,7 @@ const simulateRequest = async () => {
     .readFileSync(path.resolve(__dirname, "source.js"))
     .toString();
 
-  const args = [process.argv[2], process.argv[3], process.argv[4]];
+  const args = [process.argv[2], process.argv[3], process.argv[4]]; //  org id, event id,  end user caller address
 
   const secrets = { OAUTH_KEY: process.env.OAUTH_KEY };
 
