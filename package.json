@@ -9,7 +9,10 @@
   "license": "MIT",
   "devDependencies": {
     "@chainlink/env-enc": "^1.0.5",
-    "@chainlink/functions-toolkit": "^0.2.3",
+    "@chainlink/functions-toolkit": "^0.2.6",
     "ethers": "^5.7.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
   }
 }

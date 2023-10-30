@@ -5,7 +5,7 @@ const { providers, Wallet } = require("ethers");
 require("@chainlink/env-enc").config();
 
 const generateSecrets = async () => {
-    const provider = new providers.JsonRpcProvider(process.env.POLYGON_MUMBAI_RPC_URL)
+    const provider = new providers.JsonRpcProvider(process.env.MUMBAI_RPC_URL)
     const signer = new Wallet(process.env.PRIVATE_KEY, provider)
     const functionsRouterAddress = '0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C'
 

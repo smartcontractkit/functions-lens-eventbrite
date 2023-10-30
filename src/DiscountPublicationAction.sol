@@ -7,6 +7,8 @@ import {IModuleGlobals} from "src/vendor/lens/v2/interfaces/IModuleGlobals.sol";
 import {HubRestricted} from "src/vendor/lens/v2/base/HubRestricted.sol";
 import {FunctionsClient} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {FunctionsRequest} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
+import  "openzeppelin-contracts/contracts/utils/Strings.sol";
+import "forge-std/console.sol";
 
 contract DiscountPublicationAction is
     HubRestricted,
@@ -18,9 +20,13 @@ contract DiscountPublicationAction is
     struct RequestDetails {
         uint8 donHostedSecretsSlotID;
         uint64 donHostedSecretsVersion;
-        uint64 quantityAvailable;
-        bytes32 percentageOff;
+        string quantityAvailable;
+        string percentageOff;
     }
+
+    bytes32 public s_lastRequestId;
+    bytes public s_lastResponse;
+    bytes public s_lastError;
 
     uint64 internal immutable i_subscriptionId;
     uint32 internal immutable i_callbackGasLimit;
@@ -33,8 +39,10 @@ contract DiscountPublicationAction is
         internal s_functionsRequests;
     mapping(bytes32 msgSenderEventId => bytes) internal s_discountCodes;
 
+    mapping (bytes32 => address) public requestIdToRequester;
+
     event Request(bytes32 indexed requestId);
-    event DiscountCode(bytes indexed discountCode);
+    event DiscountCode(address indexed requester, string discountCode);
     event SetRequestDetails(
         uint8 donHostedSecretsSlotID,
         uint64 donHostedSecretsVersion
@@ -65,9 +73,11 @@ contract DiscountPublicationAction is
         (
             uint8 donHostedSecretsSlotID,
             uint64 donHostedSecretsVersion,
-            bytes32 percentageOff,
-            uint64 quantityAvailable
-        ) = abi.decode(data, (uint8, uint64, bytes32, uint64));
+            string memory percentageOff,
+            string memory quantityAvailable
+        ) = abi.decode(data, (uint8, uint64, string, string));
+
+        console.log("quantityAvailable", quantityAvailable);
 
         s_requestDetails.donHostedSecretsSlotID = donHostedSecretsSlotID;
         s_requestDetails.donHostedSecretsVersion = donHostedSecretsVersion;
@@ -100,11 +110,12 @@ contract DiscountPublicationAction is
         string[] memory args = new string[](5);
         args[0] = organizationId;
         args[1] = eventId;
-        args[2] = string(
-            abi.encodePacked(processActionParams.actorProfileOwner)
-        );
-        args[3] = string(abi.encodePacked(s_requestDetails.percentageOff));
-        args[4] = string(abi.encodePacked(s_requestDetails.quantityAvailable));
+        
+        // convert address of the personal invoking the OA into a string.
+        args[2] = Strings.toHexString(uint256(uint160(processActionParams.actorProfileOwner)), 20);
+       
+        args[3] = s_requestDetails.percentageOff;
+        args[4] = s_requestDetails.quantityAvailable;
 
         req.setArgs(args);
 
@@ -114,6 +125,10 @@ contract DiscountPublicationAction is
             i_callbackGasLimit,
             i_donId
         );
+
+        s_lastRequestId = requestId;
+
+        requestIdToRequester[requestId] = processActionParams.actorProfileOwner;
 
         bytes32 userToEventIdRelation = keccak256(
             abi.encodePacked(processActionParams.actorProfileOwner, eventId)
@@ -153,9 +168,12 @@ contract DiscountPublicationAction is
     function fulfillRequest(
         bytes32 requestId,
         bytes memory response,
-        bytes memory /*err*/
+        bytes memory err
     ) internal override {
+        s_lastResponse = response;
+        s_lastError = err;
+
         s_discountCodes[s_functionsRequests[requestId]] = response;
-        emit DiscountCode(response);
+        emit DiscountCode(requestIdToRequester[requestId], string(response));
     }
 }

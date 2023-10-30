@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
+import "forge-std/console.sol";
+
 import {DiscountPublicationAction} from "src/DiscountPublicationAction.sol";
 import {ModuleGlobals} from "src/vendor/lens/v2/misc/ModuleGlobals.sol";
 import {MockLinkToken} from "src/vendor/chainlink/v0.8/mocks/MockLinkToken.sol";
@@ -138,8 +140,8 @@ contract DiscountPublicationActionTest is Test {
 
         inputs[0] = "node";
         inputs[1] = "simulateRequest.js";
-        inputs[2] = eventId;
-        inputs[3] = organizationId;
+        inputs[2] = organizationId; // @andrejrakic please note swap
+        inputs[3] = eventId;
         inputs[4] = lensUserAddress;
         inputs[5] = PERCENTAGE_OFF;
         inputs[6] = Strings.toString(QUANTITY_AVAILABLE);
