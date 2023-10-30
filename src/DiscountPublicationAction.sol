@@ -39,8 +39,10 @@ contract DiscountPublicationAction is
         internal s_functionsRequests;
     mapping(bytes32 msgSenderEventId => bytes) internal s_discountCodes;
 
+    mapping (bytes32 => address) public requestIdToRequester;
+
     event Request(bytes32 indexed requestId);
-    event DiscountCode(bytes indexed discountCode);
+    event DiscountCode(address indexed requester, string discountCode);
     event SetRequestDetails(
         uint8 donHostedSecretsSlotID,
         uint64 donHostedSecretsVersion
@@ -97,15 +99,6 @@ contract DiscountPublicationAction is
                 (string, string, string)
             );
 
-        // function processPublicationAction(
-        //     bytes calldata actionModuleData
-        // ) external override onlyHub returns (bytes memory) {
-        //     (
-        //         string memory organizationId,
-        //         string memory eventId,
-        //         string memory javaScriptSource
-        //     ) = abi.decode(actionModuleData, (string, string, string));
-
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(javaScriptSource);
 
@@ -124,10 +117,6 @@ contract DiscountPublicationAction is
         args[3] = s_requestDetails.percentageOff;
         args[4] = s_requestDetails.quantityAvailable;
 
-        console.log("hey", args[2]);
-        console.log("hey", args[3]);
-        console.log("hey", args[4]);
-
         req.setArgs(args);
 
         bytes32 requestId = _sendRequest(
@@ -140,6 +129,8 @@ contract DiscountPublicationAction is
         // console.logBytes(req.encodeCBOR()); // TODO: zubin remove
 
         s_lastRequestId = requestId;
+
+        requestIdToRequester[requestId] = processActionParams.actorProfileOwner;
 
         bytes32 userToEventIdRelation = keccak256(
             abi.encodePacked(processActionParams.actorProfileOwner, eventId)
@@ -185,6 +176,6 @@ contract DiscountPublicationAction is
         s_lastError = err;
 
         s_discountCodes[s_functionsRequests[requestId]] = response;
-        emit DiscountCode(response);
+        emit DiscountCode(requestIdToRequester[requestId], string(response));
     }
 }
