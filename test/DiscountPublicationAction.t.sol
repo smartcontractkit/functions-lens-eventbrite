@@ -239,8 +239,6 @@ contract DiscountPublicationActionTest is Test {
             eventId
         );
 
-        console.log("ASSERT ON ", discountCode, simulationResponse);  // TODO zubin
-
         assertEq(simulationResponse, discountCode);
     }
 }

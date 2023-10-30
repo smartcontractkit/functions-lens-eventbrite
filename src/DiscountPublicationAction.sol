@@ -126,8 +126,6 @@ contract DiscountPublicationAction is
             i_donId
         );
 
-        // console.logBytes(req.encodeCBOR()); // TODO: zubin remove
-
         s_lastRequestId = requestId;
 
         requestIdToRequester[requestId] = processActionParams.actorProfileOwner;
