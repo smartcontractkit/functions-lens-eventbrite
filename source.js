@@ -29,8 +29,6 @@ const resolveAddressToLensHandle = await Functions.makeHttpRequest({
 
 const lensHandle = resolveAddressToLensHandle.data.data.profiles.items[0].handle.fullHandle
 
-console.log("Details: ", msgSender, lensHandle);
-
 const discountCode = `DISCOUNT_CODE_${organizationId}_${eventId}_${lensHandle}`;
 
 const createDiscount = await Functions.makeHttpRequest({
@@ -57,4 +55,22 @@ if (createDiscount.status == 200) {
   console.error(createDiscount.message);
 }
 
-return Functions.encodeString(discountCode);
+const getEventUrl = await Functions.makeHttpRequest({
+  url: `https://www.eventbriteapi.com/v3/events/${eventId}/`,
+  method: "GET",
+  headers: {
+     'Authorization': 'Bearer A7UF3KMJJKNNJPOL6JUV',
+    "Content-Type": "application/json",
+  }
+});
+
+if (getEventUrl.status == 200) {
+  console.log("Event URL: ", getEventUrl.data.url);
+} else {
+  console.error("Error fetching Event: " + getEventUrl);
+}
+
+const urlWithDiscount = getEventUrl.data.url + "?discount="+ discountCode
+console.log("URL with discount: ", urlWithDiscount)
+
+return Functions.encodeString(urlWithDiscount);
