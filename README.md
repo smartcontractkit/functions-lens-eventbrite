@@ -7,19 +7,35 @@ This project combines [Chainlink Functions](https://docs.chain.link/chainlink-fu
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Current LTS Node.js version](https://nodejs.org/en/about/releases/)
 - [Foundry](https://book.getfoundry.sh/getting-started/installation)
+- Connect your wallet and get a Lens profile from [this URL](https://v2.hey.xyz/). Make sure your wallet is connected to Polygon Mumbai and that you have[ Matic in your wallet](https://faucet.polygon.technology/).
+- Fund your wallet with some [LINK](faucets.chain.link)
 
 ## Getting Started
 
-1. Install packages
+1. Install smart contract packages
 
 ```
-npm install
+cd contracts && npm install
 ```
 
 2. Compile contracts
 
 ```
 forge build
+```
+
+3. Install UI packages
+
+```
+cd ../ui && npm install
+```
+
+If dependency clashes arise please run `npm install --force`
+
+4. Start the server
+
+```
+npm run dev
 ```
 
 ## What are we building?
@@ -100,9 +116,33 @@ forge create --rpc-url <your_rpc_url> \
 
 Make a note of your deployed contract.
 
-Then Head to the [Lens V2 ModuleGlobals Contract on Mumbai](https://mumbai.polygonscan.com/address/0x8834aE494ADD3C56d274Fe88243526DBAB15dEF8) and from the `Contracts` tab, click on `Write as Proxy`.  Connect your wallet to the page, and then call `registerModule` with the following arguments:
+Then Head to the [Lens V2 ModuleGlobals Contract on Mumbai](https://mumbai.polygonscan.com/address/0x8834aE494ADD3C56d274Fe88243526DBAB15dEF8) and from the `Contracts` tab, click on `Write as Proxy`. Connect your wallet to the page, and then call `registerModule` with the following arguments:
+
 - `moduleAddress` : the Open Action with Functions contract you just deployed
-- `moduleType`:  1  (Enum for Open Action) ([ref](https://docs.lens.xyz/v2/docs/publishing-a-module))
+- `moduleType`: 1 (Enum for Open Action) ([ref](https://docs.lens.xyz/v2/docs/publishing-a-module))
+
+## UI Environment Variables
+
+Navigate to the `ui` folder and create a `.env` file there and double check it is `gitignored`.
+
+Then add the following values to your `.env`:
+
+```
+VITE_ORG_ID
+VITE_EVENT_ID
+```
+
+You would have obtained these secrets when running the setup steps for your Open Actions With Functions Smart Contract.
+
+## Main Apis used
+
+1. For all these APIs, please note the `TODO @dev` instructions in the file.
+
+2. Once your profile is created you can use `useProfile.tsx` in `./src/profiles` which will be rendered on `localhost/profiles/useProfile`.
+
+3. Then Navigate to `http://localhost:PORT/publications/useOpenAction` and enter the Open Action With Functions Smart Contract contract address. Create your publication. When that is done and finalized on the blockchain, you will see a button to interact with the Open Action that is mounted to your publication. To check your publication on the Hey app you can navigate to `https://v2.hey.xyz/u/<<YOUR_LENS_V2_PROFILE_ID>>` in a new tab to see your posts.
+
+4. TODO
 
 ## Disclaimer
 
