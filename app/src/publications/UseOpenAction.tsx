@@ -30,7 +30,7 @@ const EVENT_ID = import.meta.env.VITE_EVENT_ID;
 
 const abiEncoder = ethers.utils.defaultAbiCoder;
 const donHostedSecretsSlotId = 0; // TODO @dev put your secrets slot ID here if youve choses something other than 0
-const donHostedSecretsVersion = 1698636097; // TODO @dev put your secrets version here
+const donHostedSecretsVersion = 1699842119; // TODO @dev put your secrets version here
 const percentageOff = "90"; // TODO @dev put your percentage off here
 const quantityAvailable = "10"; // TODO @dev put your quantity available here
 
