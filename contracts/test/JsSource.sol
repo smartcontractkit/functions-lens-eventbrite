@@ -49,5 +49,20 @@ library JsSource {
         "} else {"
         "    console.error(createDiscount.message);"
         "}"
-        "return Functions.encodeString(discountCode);";
+        "const getEventUrl = await Functions.makeHttpRequest({"
+        "  url: `https://www.eventbriteapi.com/v3/events/${eventId}/`,"
+        "  method: `GET`,"
+        "  headers: {"
+        "    'Authorization': `Bearer ${secrets.OAUTH_KEY}`,"
+        "    'Content-Type': 'application/json',"
+        "  }"
+        "});"
+        "if (getEventUrl.status == 200) {"
+        "  console.log(`Event URL: `, getEventUrl.data.url);"
+        "} else {"
+        "  console.error(`Error fetching Event: ` + getEventUrl);"
+        "}"
+        "const urlWithDiscount = `${getEventUrl.data.url}?discount= ${discountCode}`"
+        "console.log(`URL with discount: `, urlWithDiscount)"
+        "return Functions.encodeString(urlWithDiscount);";
 }

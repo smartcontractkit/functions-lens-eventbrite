@@ -27,7 +27,7 @@ forge build
 3. Install UI packages
 
 ```
-cd ../ui && npm install
+cd ../app && npm install
 ```
 
 If dependency clashes arise please run `npm install --force`
