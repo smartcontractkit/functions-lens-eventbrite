@@ -57,13 +57,13 @@ Next, you will need to get your
 
 The core logic is stored in the [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract which implements `IPublicationActionModule` and `FunctionsClient` interfaces. On Lens collect, it will make a Chainlink Functions request to execute the JavaScript code from the [`source.js`](./source.js) file, which will resolve User's address to a Lens handle and generate the Eventbrite discount code for the provided event. The [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract will then store the returned discount code.
 
-![discount](./img/discount.png)
+![discount](./img/promoCodes.png)
 
 ## Usage
 
 For setting up environment variables we are going to use the [`@chainlink/env-enc`](https://www.npmjs.com/package/@chainlink/env-enc) package for extra security. It encrypts sensitive data instead of storing them as plain text in the `.env` file, by creating a new, `.env.enc` file. Although it's not recommended to push this file online, if that accidentally happens your secrets will still be encrypted.
 
-1. Change into the `./contracts` directory to set up its dependencies.  Make sure commands in [this USAGE SECTION](#usage) are run from inside this directory.  Start with  `npm install` if you've not done that yet.  
+1. Change into the `./contracts` directory to set up its dependencies. Make sure commands in [this USAGE SECTION](#usage) are run from inside this directory. Start with `npm install` if you've not done that yet.
 
 2. Set a password for encrypting and decrypting the environment variable file. You can change it later by typing the same command.
 
@@ -123,13 +123,14 @@ Then Head to the [Lens V2 ModuleGlobals Contract on Mumbai](https://mumbai.polyg
 - `moduleAddress` : the Open Action with Functions contract you just deployed
 - `moduleType`: 1 (Enum for Open Action) ([ref](https://docs.lens.xyz/v2/docs/publishing-a-module))
 
-Finally, we want to encrypt the secrets that will be injected by the Chainlink DON into the `./contracts/source.js` script. 
+Finally, we want to encrypt the secrets that will be injected by the Chainlink DON into the `./contracts/source.js` script.
 
-Make sure you're in the `./contracts` director and run `node generateSecrets.js`. This will take the secrets that you've set in the `.env.enc` file, and encrypt them with the DON public key so that it can only be Decrypted by Chainlink DON Nodes.  These decrypted secrets get uploaded and stored in the DON and then injected at run time into the script in `./contracts/source.js`.  Please inspect `./contracts/generateSecrets.js` to understand more.
+Make sure you're in the `./contracts` director and run `node generateSecrets.js`. This will take the secrets that you've set in the `.env.enc` file, and encrypt them with the DON public key so that it can only be Decrypted by Chainlink DON Nodes. These decrypted secrets get uploaded and stored in the DON and then injected at run time into the script in `./contracts/source.js`. Please inspect `./contracts/generateSecrets.js` to understand more.
 
 When the secrets have been successfully uploaded your console print info that looks like the following:
+
 ```
-❯ node generateSecrets.js          
+❯ node generateSecrets.js
 secp256k1 unavailable, reverting to browser version
 Version: 1699842119
 Slot ID: 0
@@ -158,21 +159,20 @@ Then run `npm dev`` to start the server.
 
 1. For all these steps, please note the `TODO @dev` instructions in the file.
 
-2. Once your profile is created go to `useProfile.tsx` in `./src/profiles`.  Update the `TODO @dev` comment there with your profile handle and that should trigger the web app to render your profile if you navigate to `localhost/profiles/useProfile`.
+2. Once your profile is created go to `useProfile.tsx` in `./src/profiles`. Update the `TODO @dev` comment there with your profile handle and that should trigger the web app to render your profile if you navigate to `localhost/profiles/useProfile`.
 
-3. Then open the `./app/src/publications/UseOpenAction.tsx` file.  Update the `TODO @dev` comments. You'll need the values from when you uploaded your app secrets to the DON.  Once you've saved the file with your updates,  navigate to `http://localhost:PORT/publications/useOpenAction` and enter the Open Action With Functions Smart Contract contract address that you had deployed. Create your publication by clicking the CREATE SAMPLE POST button. Note you will have to sign 2 transactions - one to upload your post to Arweave and the other to initialize your Open Actions with Functions smart contract. 
+3. Then open the `./app/src/publications/UseOpenAction.tsx` file. Update the `TODO @dev` comments. You'll need the values from when you uploaded your app secrets to the DON. Once you've saved the file with your updates, navigate to `http://localhost:PORT/publications/useOpenAction` and enter the Open Action With Functions Smart Contract contract address that you had deployed. Create your publication by clicking the CREATE SAMPLE POST button. Note you will have to sign 2 transactions - one to upload your post to Arweave and the other to initialize your Open Actions with Functions smart contract.
 
 If you open your browser dev tools, you can see the logs that contain info about the post upload to arweave and other inputs that will be sent to the blockchain in subsequent steps.
 
 4. When your Open Action published is posted and finalized on the blockchain, you will see a button to interact with the Open Action that is mounted to your publication. To check your publication on the Hey app you can navigate to `https://testnet.hey.xyz//u/<<YOUR_LENS_V2_PROFILE_ID>>` in a new tab to see your posts.
 
-4. Click on the GET DISCOUNT CODE button and sign the transactions.  If you look at your chrome dev tools you will see the giant bytecode that contains the data that is submitted to `processPublicationAction` in your Functions-enabled publication contract.
+5. Click on the GET DISCOUNT CODE button and sign the transactions. If you look at your chrome dev tools you will see the giant bytecode that contains the data that is submitted to `processPublicationAction` in your Functions-enabled publication contract.
 
-5.  You can wait about 30 seconds or so for the UI to update with the event URL and the discount code applied.  Alternatively got to the Mumbai blockexplorer at `https://mumbai.polygonscan.com/address/YOUR_CONTRACT_ADDRESS`, click on "READ" and take a look at the requestID and then the `s_lastResponse` field.  If that is `0x` then there has been an error (and no discount URL will show up on the front end). You can check the error on the block explorer by clicking on `s_lastError`.  The bytes hex shown there can be decoded into its string using [this converter tool](https://codebeautify.org/hex-string-converter).
+6. You can wait about 30 seconds or so for the UI to update with the event URL and the discount code applied. Alternatively got to the Mumbai blockexplorer at `https://mumbai.polygonscan.com/address/YOUR_CONTRACT_ADDRESS`, click on "READ" and take a look at the requestID and then the `s_lastResponse` field. If that is `0x` then there has been an error (and no discount URL will show up on the front end). You can check the error on the block explorer by clicking on `s_lastError`. The bytes hex shown there can be decoded into its string using [this converter tool](https://codebeautify.org/hex-string-converter).
 
 If successful the UI will look like this:
 ![event](./img/success.png)
-
 
 ## Disclaimer
 
