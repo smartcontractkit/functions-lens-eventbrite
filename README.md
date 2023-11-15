@@ -65,13 +65,17 @@ For setting up environment variables we are going to use the [`@chainlink/env-en
 
 1. Change into the `./contracts` directory to set up its dependencies. Make sure commands in [this USAGE SECTION](#usage) are run from inside this directory. Start with `npm install` if you've not done that yet.
 
+```shell
+cd contracts
+```
+
 2. Set a password for encrypting and decrypting the environment variable file. You can change it later by typing the same command.
 
 ```shell
 npx env-enc set-pw
 ```
 
-2. Now set the `OAUTH_KEY` environment variable by typing:
+2. Now set the `OAUTH_KEY`, `PRIVATE_KEY` and `POLYGON_MUMBAI_RPC_URL` environment variables by typing:
 
 ```shell
 npx env-enc set
@@ -117,6 +121,8 @@ forge create --rpc-url <your_rpc_url> \
 ```
 
 Make a note of your deployed contract.
+
+Navigate to your Chainlink Functions subscription at [Functions Subscription Manager](https://functions.chain.link/) and add this newly deployed smart contract as your subscription's consumer by clicking the `Add Consumer` button and providing the address of a smart contract.
 
 Then Head to the [Lens V2 ModuleGlobals Contract on Mumbai](https://mumbai.polygonscan.com/address/0x8834aE494ADD3C56d274Fe88243526DBAB15dEF8) and from the `Contracts` tab, click on `Write as Proxy`. Connect your wallet to the page, and then call `registerModule` with the following arguments:
 
