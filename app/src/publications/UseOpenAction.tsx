@@ -117,7 +117,7 @@ export function UseOpenAction() {
         <article>
           <p>
             Here is your Event Discount Code:{" "}
-            <span style={{ color: "blue" }}> {discountCode}</span>.
+            <span style={{ color: "blue" }}><a href={`http://www.eventbrite.com/event/${EVENT_ID}/?discount=${discountCode}`}>{discountCode}</a></span>
           </p>
         </article>
       )}
