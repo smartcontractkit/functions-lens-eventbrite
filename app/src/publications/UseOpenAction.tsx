@@ -30,9 +30,9 @@ const EVENT_ID = import.meta.env.VITE_EVENT_ID;
 
 const abiEncoder = ethers.utils.defaultAbiCoder;
 const donHostedSecretsSlotId = 0; // TODO @dev put your secrets slot ID here if youve choses something other than 0
-const donHostedSecretsVersion = 1699842119; // TODO @dev put your secrets version here
-const percentageOff = "90"; // TODO @dev put your percentage off here
-const quantityAvailable = "10"; // TODO @dev put your quantity available here
+const donHostedSecretsVersion = 1701401497; // TODO @dev put your secrets version here
+const percentageOff = "65"; // TODO @dev put your percentage off here
+const quantityAvailable = "20"; // TODO @dev put your quantity available here
 
 const filepath = "../../source.js";
 fetch(filepath)
@@ -117,7 +117,13 @@ export function UseOpenAction() {
         <article>
           <p>
             Here is your Event Discount Code:{" "}
-            <span style={{ color: "blue" }}><a href={`http://www.eventbrite.com/event/${EVENT_ID}/?discount=${discountCode}`}>{discountCode}</a></span>
+            <span style={{ color: "blue" }}>
+              <a
+                href={`http://www.eventbrite.com/event/${EVENT_ID}/?discount=${discountCode}`}
+              >
+                {discountCode}
+              </a>
+            </span>
           </p>
         </article>
       )}
@@ -294,7 +300,10 @@ function DisplayPublication({
     clear();
 
     log("Calling Open Action...please sign the transaction in your wallet");
-    const result = await getDiscount({ publication });
+    const result = await getDiscount({
+      publication,
+      // sponsored: false, 
+    });
     console.log(
       "ABI Encoded Data passed to processPublicationAction():  ",
       abiEncodedProcessPublicationData

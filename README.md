@@ -7,8 +7,11 @@ This project combines [Chainlink Functions](https://docs.chain.link/chainlink-fu
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Current LTS Node.js version](https://nodejs.org/en/about/releases/)
 - [Foundry](https://book.getfoundry.sh/getting-started/installation)
-- Connect your wallet and get a Lens profile from [this URL](https://testnet.hey.xyz/). Make sure your wallet is connected to Polygon Mumbai and that you have[ Matic in your wallet](https://faucet.polygon.technology/).
 - Fund your wallet with some [LINK](faucets.chain.link)
+- Connect your wallet and get a Lens profile from [this URL](https://testnet.hey.xyz/). Make sure your wallet is connected to Polygon Mumbai and that you have[ Matic in your wallet](https://faucet.polygon.technology/).  Click on the Login button, then click on "Create Testnet Account" and choose your lens profile name.  Then logout and log back in with your wallet to see your testnet handle.
+
+![lens-profile](./img/hey-lens-app-testnet.png)
+
 
 ## Getting Started
 
@@ -90,6 +93,7 @@ npx env-enc view
 ```
 
 3. Run local simulation
+check the `./contracts/test/DiscountPublicationAction.t.sol` file for `@Dev TODOs` and update. Then run: 
 
 ```
 forge test -vvv --ffi
@@ -101,20 +105,20 @@ forge test -vvv --ffi
 
 To deploy [`DiscountPublicationAction.sol`](./src/DiscountPublicationAction.sol) smart contract, prepare the following constructor arguments:
 
-- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/v2/docs/deployed-contract-addresses#mumbai-developer-preview) smart contract
-- `moduleGlobals` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/v2/docs/deployed-contract-addresses#mumbai-developer-preview) smart contract
+- `hub` - The address of a Lens' [LensHub](https://docs.lens.xyz/docs/deployed-contract-addresses#mumbai-testnet-addresses) smart contract
+- `moduleRegistry` - The address of a Lens' [ModuleGlobals](https://docs.lens.xyz/docs/deployed-contract-addresses#mumbai-testnet-addresses) smart contract
 - `router` - The address of a Chainlink [Functions Router](https://docs.chain.link/chainlink-functions/supported-networks) smart contract
 - `subscriptionId` - The ID of your Chainlink Functions subscription which you can create at [Functions Subscription Manager](https://functions.chain.link/) following steps from the [Official Documentation](https://docs.chain.link/chainlink-functions/resources/subscriptions)
-- `callbackGasLimit` - The [maximum gas](https://docs.chain.link/chainlink-functions/api-reference/functions-client) that Chainlink Functions can use when transmitting the response to your contract
-- `donIdBytes32` - The ID of a Chainlink Functions [DON to be invoked](https://docs.chain.link/chainlink-functions/supported-networks). This needs to be converted to `bytes32` with `cast --format-bytes32-string "fun-polygon-mumbai-1"` or via etherjs with `node getDonIdBytes.js fun-polygon-mumbai-1`.
+- `callbackGasLimit` - The [maximum gas](https://docs.chain.link/chainlink-functions/api-reference/functions-client) that Chainlink Functions can use when transmitting the response to your contract.  We recommend going with 300000 for now.
+- `donIdBytes32` - The ID of a Chainlink Functions [DON to be invoked](https://docs.chain.link/chainlink-functions/supported-networks). The docs list the Don Id as a string or a bytes32 hex. Copy the bytes32 hex, or you want to convert programmatically yourself, run `cast --format-bytes32-string "fun-polygon-mumbai-1"` or via etherjs with `node getDonIdBytes.js fun-polygon-mumbai-1`.
 
 Then run the `forge create` command:
 
 ```
 forge create --rpc-url <your_rpc_url> \
     --private-key <your_private_key> \
-    --constructor-args <hub> <moduleGlobals> <router> <subscriptionId> <callbackGasLimit> <donIdBytes32> \
-    --etherscan-api-key <your_etherscan_api_key> \
+    --constructor-args <hub> <moduleRegistry> <router> <subscriptionId> <callbackGasLimit> <donIdBytes32> \
+    --etherscan-api-key <your_polygonscan_api_key> \
     --verify \
     --legacy \
     src/DiscountPublicationAction.sol:DiscountPublicationAction
@@ -165,17 +169,21 @@ Then run `npm dev`` to start the server.
 
 1. For all these steps, please note the `TODO @dev` instructions in the file.
 
+To begin, make sure you login on the front end app, using the wallet that you created your Lens / Hey profile with.
+
 2. Once your profile is created go to `useProfile.tsx` in `./src/profiles`. Update the `TODO @dev` comment there with your profile handle and that should trigger the web app to render your profile if you navigate to `localhost/profiles/useProfile`.
 
-3. Then open the `./app/src/publications/UseOpenAction.tsx` file. Update the `TODO @dev` comments. You'll need the values from when you uploaded your app secrets to the DON. Once you've saved the file with your updates, navigate to `http://localhost:PORT/publications/useOpenAction` and enter the Open Action With Functions Smart Contract contract address that you had deployed. Create your publication by clicking the CREATE SAMPLE POST button. Note you will have to sign 2 transactions - one to upload your post to Arweave and the other to initialize your Open Actions with Functions smart contract.
+3. Then open the `./app/src/publications/UseOpenAction.tsx` file. Update the `TODO @dev` comments. You'll need the values from when you uploaded your app secrets to the DON. 
 
-If you open your browser dev tools, you can see the logs that contain info about the post upload to arweave and other inputs that will be sent to the blockchain in subsequent steps.
+4. Once you've saved the file with your updates, navigate to `http://localhost:PORT/publications/useOpenAction` and enter the Open Action With Functions Smart Contract contract address that you had deployed. Create your publication by clicking the CREATE SAMPLE POST button. Note you will have to sign 2 transactions - one to upload your post to Arweave and the other to initialize your Open Actions with Functions smart contract.
 
-4. When your Open Action published is posted and finalized on the blockchain, you will see a button to interact with the Open Action that is mounted to your publication. To check your publication on the Hey app you can navigate to `https://testnet.hey.xyz//u/<<YOUR_LENS_V2_PROFILE_ID>>` in a new tab to see your posts.
+If you open your browser dev tools, you can see the logs that contain info about the post upload to Arweave and other inputs that will be sent to the blockchain in subsequent steps.
 
-5. Click on the GET DISCOUNT CODE button and sign the transactions. If you look at your chrome dev tools you will see the giant bytecode that contains the data that is submitted to `processPublicationAction` in your Functions-enabled publication contract.
+5. When your Open Action  is published and finalized on the blockchain, you will see a button to interact with the Open Action that is mounted to your publication. To check your publication on the Hey app you can navigate to `https://testnet.hey.xyz/u/<<YOUR_LENS_V2_PROFILE_ID>>` in a new tab to see your posts.
 
-6. You can wait about 30 seconds or so for the UI to update with the event URL and the discount code applied. Alternatively got to the Mumbai blockexplorer at `https://mumbai.polygonscan.com/address/YOUR_CONTRACT_ADDRESS`, click on "READ" and take a look at the requestID and then the `s_lastResponse` field. If that is `0x` then there has been an error (and no discount URL will show up on the front end). You can check the error on the block explorer by clicking on `s_lastError`. The bytes hex shown there can be decoded into its string using [this converter tool](https://codebeautify.org/hex-string-converter).
+6. Click on the GET DISCOUNT CODE button and sign the transactions. If you look at your chrome dev tools you will see the giant bytecode that contains the data that is submitted to `processPublicationAction` in your Functions-enabled publication contract.
+
+7. You can wait about 30 seconds or so for the UI to update with the event URL and the discount code applied. Alternatively got to the Mumbai blockexplorer at `https://mumbai.polygonscan.com/address/YOUR_CONTRACT_ADDRESS`, click on "READ" and take a look at the requestID and then the `s_lastResponse` field. If that is `0x` then there has been an error (and no discount URL will show up on the front end). You can check the error on the block explorer by clicking on `s_lastError`. The bytes hex shown there can be decoded into its string using [this converter tool](https://codebeautify.org/hex-string-converter).
 
 If successful the UI will look like this:
 ![event](./img/success.png)

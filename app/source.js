@@ -5,7 +5,7 @@ const percentageOff = args[3];
 const quantityAvailable = args[4];
 
 const resolveAddressToLensHandle = await Functions.makeHttpRequest({
-  url: `https://api-v2-mumbai.lens.dev`,
+  url: `https://api-v2-mumbai-live.lens.dev/`,
   method: "POST",
   headers: {
     "Content-Type": "application/json",
