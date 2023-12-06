@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {Types} from "src/vendor/lens/v2/libraries/constants/Types.sol";
 import {IPublicationActionModule} from "src/vendor/lens/v2/interfaces/IPublicationActionModule.sol";
+import {LensModule} from "src/vendor/lens/v2/modules/LensModule.sol";
 import {IModuleGlobals} from "src/vendor/lens/v2/interfaces/IModuleGlobals.sol";
 import {HubRestricted} from "src/vendor/lens/v2/base/HubRestricted.sol";
 import {FunctionsClient} from "src/vendor/chainlink/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
@@ -12,6 +13,7 @@ import {Strings} from "src/vendor/openzeppelin/contracts/utils/Strings.sol";
 contract DiscountPublicationAction is
     HubRestricted,
     IPublicationActionModule,
+    LensModule,
     FunctionsClient
 {
     using FunctionsRequest for FunctionsRequest.Request;
@@ -175,5 +177,14 @@ contract DiscountPublicationAction is
 
         s_discountCodes[s_functionsRequests[requestId]] = response;
         emit DiscountCode(requestIdToRequester[requestId], string(response));
+    }
+
+    // Override LensModule interface checker
+    function supportsInterface(bytes4 interfaceID) public pure override returns (bool) {
+        return interfaceID == type(IPublicationActionModule).interfaceId || super.supportsInterface(interfaceID);
+    }
+
+    function getModuleMetadataURI() external view returns (string memory){
+        return "Demo Lens/Functions App for Eventbrite Discounts";
     }
 }

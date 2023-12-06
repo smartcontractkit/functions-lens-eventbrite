@@ -183,7 +183,7 @@ contract DiscountPublicationActionTest is Test {
             initData
         );
 
-        address actorProfileOwner = 0xed4AE5Eb2a93658852343385A0B28a2B66a07697;
+        address actorProfileOwner = 0x208AA722Aca42399eaC5192EE778e4D42f4E5De3; // @Dev TODO put your wallet with the lens profile here.
         uint256 actorProfileId = 0x01;
 
         string memory root = vm.projectRoot();

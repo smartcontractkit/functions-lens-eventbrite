@@ -4,7 +4,7 @@ import { ErrorMessage } from "../components/error/ErrorMessage";
 import { Loading } from "../components/loading/Loading";
 import { ProfileCard } from "./components/ProfileCard";
 
-const userHandle: string =   "test/" + "@TODOProfileIdHere" // @TODO dev. Exclude the `@` character.
+const userHandle: string =   "test/" +  "@Dev TODO ProfileIdHere" 
 
 export function UseProfile() {
   const {
